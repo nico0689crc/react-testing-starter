@@ -24,5 +24,5 @@ describe('UserList', () => {
       expect(link).toBeInTheDocument();
       expect(link).toHaveAttribute('href', `/users/${user.id}`);
     });
-  })
+  });
 });
