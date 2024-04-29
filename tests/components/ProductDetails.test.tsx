@@ -6,6 +6,7 @@ import { server } from '../mocks/server';
 import { db } from '../mocks/db';
 
 import ProductDetail from '../../src/components/ProductDetail';
+import AllProviders from '../AllProviders';
 
 describe('ProductDetail', () => {
   const productIds : number[] = [];
@@ -28,13 +29,13 @@ describe('ProductDetail', () => {
       return HttpResponse.json([]);
     }));
 
-    render(<ProductDetail productId={1} />);
+    render(<ProductDetail productId={1} />, { wrapper: AllProviders });
 
     expect(screen.getByText(/loading/i)).toBeInTheDocument();
   });
 
   it('should remove the loading indicator after data is fetched.', async () => {
-    render(<ProductDetail productId={productIds[0]}/>);
+    render(<ProductDetail productId={productIds[0]}/>, { wrapper: AllProviders });
 
     await waitForElementToBeRemoved(() => screen.queryByText(/loading/i));
   });
@@ -42,21 +43,21 @@ describe('ProductDetail', () => {
   it('should remove the loading indicator after data is fail.', async () => {
     server.use(http.get('/products/1', () => HttpResponse.error()));
 
-    render(<ProductDetail productId={1}/>);
+    render(<ProductDetail productId={1}/>, { wrapper: AllProviders });
 
     await waitForElementToBeRemoved(() => screen.queryByText(/loading/i));
   });
   
-  it('should render an invalid message if productId is invalid.', () => {
-    render(<ProductDetail productId={0} />);
+  it('should render an invalid message if productId is invalid.', async () => {
+    render(<ProductDetail productId={0} />, { wrapper: AllProviders });
 
-    expect(screen.getByText(/invalid/i)).toBeInTheDocument();
+    expect(await screen.findByText(/invalid/i)).toBeInTheDocument();
   });
 
   it('should render a not found message if product is not found.', async () => {
     server.use(http.get('/products/999', () => HttpResponse.json(null)));
 
-    render(<ProductDetail productId={999} />);
+    render(<ProductDetail productId={999} />, { wrapper: AllProviders });
 
     expect(await screen.findByText(/not found/i)).toBeInTheDocument();
   });
@@ -65,7 +66,7 @@ describe('ProductDetail', () => {
     const productId = productIds[0];
     const product = db.product.findFirst({ where: { id: { equals: productId } }});
 
-    render(<ProductDetail productId={productId} />);
+    render(<ProductDetail productId={productId} />, { wrapper: AllProviders });
 
     if(product) {
       expect(await screen.findByText(new RegExp(product.name))).toBeInTheDocument();

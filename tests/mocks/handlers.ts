@@ -3,7 +3,8 @@ import { db } from "./db";
 // import { categories, products } from "./data";
 
 export const handlers = [
-  ...db.product.toHandlers('rest')
+  ...db.product.toHandlers('rest'),
+  ...db.category.toHandlers('rest'),
 ];
 
 // export const handlers = [
